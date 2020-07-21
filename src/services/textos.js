@@ -8,4 +8,8 @@ export default {
         return consultaDados;
     },
 
+    adicionar: (texto) => {
+        return http.post('/posts', texto)
+    }
+
 }
