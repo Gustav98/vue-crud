@@ -84,6 +84,14 @@
         </tbody>
       </template>
     </v-simple-table>
+    <v-tooltip class="tooltip" v-model="mostraTooltip" top>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn icon v-bind="attrs" v-on="on">
+          <v-icon color="grey lighten-1">mdi-cart</v-icon>
+        </v-btn>
+      </template>
+      <span>Salvo com sucesso!</span>
+    </v-tooltip>
   </div>
 </template>
 
@@ -95,6 +103,7 @@
     data: () => ({
       items: [],
       valid: true,
+      mostraTooltip: false,
       tituloRules: [
         v => !!v || 'Insira um título',
       ],
@@ -123,6 +132,7 @@
         Textos.adicionar(this.texto).then( resposta => {
           let textoSalvo = resposta.data;
           localStorage.setItem('textoSalvo', JSON.stringify(textoSalvo));
+          this.mostraTooltip = true;
           this.items = [
             textoSalvo,
             ...this.items
@@ -130,7 +140,7 @@
         }).catch( err => {
           console.log(err.response);
         })
-        
+        setTimeout(() => { this.mostraTooltip = false; }, 3000)
       },
 
       removerTextos(texto){
@@ -165,6 +175,9 @@
   margin-top: 16px;
 }
 .tabela{
-  margin: 32px 32px !important;
+  margin: 32px !important;
+}
+.v-tooltip__content{
+  position: fixed !important;
 }
 </style>
