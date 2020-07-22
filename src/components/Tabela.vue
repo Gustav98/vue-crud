@@ -4,28 +4,42 @@
       <h2 class="subtitle-1 titulo-form font-weight-medium">Adicione seu texto aqui</h2>
       <v-form
         ref="form"
+        v-model="valid"
         @submit.prevent="salvarNovoTexto"
       >
         <div class="form-conteudo">
           <v-text-field
             v-model="texto.title"
+            :rules="tituloRules"
             label="Título"
             required
           ></v-text-field>
 
           <v-text-field
             v-model="texto.body"
+            :rules="descricaoRules"
             label="Descrição"
             required
           ></v-text-field>
-          
-          <v-btn
-            color="success"
-            class="mr-4"
-            @click="salvarNovoTexto"
-          >
-            Salvar
-          </v-btn>
+          <div class="btns-form">
+            <v-btn
+              color="success"
+              class="mr-4"
+              :disabled="!valid"
+              @click="salvarNovoTexto"
+            >
+              Salvar
+            </v-btn>
+
+            <v-btn
+              color="error"
+              class="mr-4"
+              :disabled="!valid"
+              @click="limparForm"
+            >
+              Limpar Formulário
+            </v-btn>
+          </div>
         </div>
 
       </v-form>
@@ -34,48 +48,42 @@
         class="mx-4"
     ></v-divider>
     <h2 class="subtitle-1 titulo-form font-weight-medium">Listagem de textos</h2>
-    <v-data-table
-      :headers="headers"
-      :items="items"
-      :page.sync="page"
-      :items-per-page="itemsPerPage"
-      hide-default-footer
-      class="elevation-1 tabela"
-      @page-count="pageCount = $event"
+    
+    <v-simple-table 
+      class="tabela"
     >
-      <template v-slot:items="props">
-          <td class="text-xs-center" >{{ props.item.title }}</td>
-          <td class="text-xs-center" >{{ props.item.body }}</td>
+      <template v-slot:default>
+        <thead>
+          <tr>
+            <th class="text-left">Título</th>
+            <th class="text-left">Descrição</th>
+            <th class="text-left">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in items" :key="item.id">
+            <td>{{ item.title }}</td>
+            <td>{{ item.body }}</td>
+            <td>
+              <v-icon
+                small
+                class="text-end"
+                @click="atualizarTextos(item)"
+              >
+                mdi-pencil
+              </v-icon>
+              <v-icon
+                small
+                class="text-end"
+                @click="removerTextos(item)"
+              >
+                mdi-delete
+              </v-icon>
+            </td>
+          </tr>
+        </tbody>
       </template>
-        <template v-slot:item.actions="{ texto }">
-          <v-icon
-            small
-            class="text-end"
-            @click="atualizarTextos(texto)"
-          >
-            mdi-pencil
-          </v-icon>
-          <v-icon
-            small
-            class="text-end"
-            @click="removerTextos(texto)"
-          >
-            mdi-delete
-          </v-icon>
-      </template>
-    </v-data-table>
-    <div class="text-center pb-5 tabela">
-      <v-pagination v-model="page" :length="pageCount"></v-pagination>
-      <v-text-field
-        :value="itemsPerPage"
-        label="Itens por página"
-        class="pt-8"
-        type="number"
-        min="-1"
-        max="15"
-        @input="itemsPerPage = parseInt($event, 10)"
-      ></v-text-field>
-    </div>
+    </v-simple-table>
   </div>
 </template>
 
@@ -86,15 +94,14 @@
 
     data: () => ({
       items: [],
-      page: 1,
-      pageCount: 0,
-      itemsPerPage: 10,
-      dadosCarregados: false,
-      headers: [
-        { text: 'Título', value: 'title' },
-        { text: 'Descrição', value: 'body' },
-        { text: 'Ações', value: 'actions', sortable: false },
+      valid: true,
+      tituloRules: [
+        v => !!v || 'Insira um título',
       ],
+      descricaoRules: [
+        v => !!v || 'Insira uma descrição',
+      ],
+      dadosCarregados: false,
       texto: {
         title: '',
         body: ''
@@ -120,6 +127,8 @@
             textoSalvo,
             ...this.items
           ]
+        }).catch( err => {
+          console.log(err.response);
         })
         
       },
@@ -134,16 +143,14 @@
         })
       },
 
-      atualizarTextos(){
-        Textos.editar(this.texto).then( resposta => {
-          let textoSalvo = resposta.data;
-          localStorage.setItem('textoSalvo', JSON.stringify(textoSalvo));
-          this.items = [
-            textoSalvo,
-            ...this.items
-          ]
-        })
-      }
+      atualizarTextos(texto){
+        this.texto = texto
+      },
+
+      limparForm () {
+        this.$refs.form.reset()
+      },
+
     }
   }
 </script>
@@ -154,7 +161,9 @@
 .form-conteudo{
   margin: 16px 32px 32px !important;
 }
-
+.btns-form{
+  margin-top: 16px;
+}
 .tabela{
   margin: 32px 32px !important;
 }
