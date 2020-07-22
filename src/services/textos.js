@@ -9,7 +9,15 @@ export default {
     },
 
     adicionar: (texto) => {
-        return http.post('/posts', texto)
+        return http.post('posts', texto)
+    },
+
+    deletar: (texto) => {
+        return http.delete('posts/1', {data: texto})
+    },
+
+    editar: (texto) => {
+        return http.put('posts/1', texto)
     }
 
 }
