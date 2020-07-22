@@ -84,12 +84,7 @@
         </tbody>
       </template>
     </v-simple-table>
-    <v-tooltip class="tooltip" v-model="mostraTooltip" top>
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn icon v-bind="attrs" v-on="on">
-          <v-icon color="grey lighten-1">mdi-cart</v-icon>
-        </v-btn>
-      </template>
+    <v-tooltip class="tooltip" v-model="mostraTooltip" bottom>
       <span>Salvo com sucesso!</span>
     </v-tooltip>
   </div>
@@ -140,7 +135,7 @@
         }).catch( err => {
           console.log(err.response);
         })
-        setTimeout(() => { this.mostraTooltip = false; }, 3000)
+        setTimeout(() => { this.mostraTooltip = false; }, 3500)
       },
 
       removerTextos(texto){
@@ -178,6 +173,7 @@
   margin: 32px !important;
 }
 .v-tooltip__content{
+  top: 90% !important;
   position: fixed !important;
 }
 </style>
