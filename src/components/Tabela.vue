@@ -61,21 +61,21 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in items" :key="item.id">
-            <td>{{ item.title }}</td>
-            <td>{{ item.body }}</td>
+          <tr v-for="texto in items" :key="texto.id">
+            <td>{{ texto.title }}</td>
+            <td>{{ texto.body }}</td>
             <td>
               <v-icon
                 small
                 class="text-end"
-                @click="atualizarTextos(item)"
+                @click="atualizarTextos(texto)"
               >
                 mdi-pencil
               </v-icon>
               <v-icon
                 small
                 class="text-end"
-                @click="removerTextos(item)"
+                @click="removerTextos(texto)"
               >
                 mdi-delete
               </v-icon>
@@ -107,6 +107,7 @@
       ],
       dadosCarregados: false,
       texto: {
+        id: '',
         title: '',
         body: ''
       }
@@ -140,11 +141,10 @@
 
       removerTextos(texto){
         Textos.deletar(texto).then( resposta => {
-          this.items = [
-            this.listarTextos(),
-            ...this.items
-          ]
+          this.listarTextos()
           console.log(resposta);
+        }).catch(err => {
+          console.log(err.response);
         })
       },
 
